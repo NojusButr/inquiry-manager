@@ -1,12 +1,10 @@
+'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { supabase } from '../../layout';
 
-// Removed unused TiptapEditor import
-
 export default function InquiryDetails() {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
   interface Inquiry {
     id: string;
     subject: string;
@@ -14,139 +12,100 @@ export default function InquiryDetails() {
     received_at: string;
     status: string;
     category: string;
+    thread_id: string;
+    original_id: string;
     body: string;
+    assigned_to: string;
   }
 
   const [inquiry, setInquiry] = useState<Inquiry | null>(null);
-  // Removed unused error state
+  interface Comment {
+    message: string;
+    created_at: string;
+    user_id: string;
+  }
+
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     if (!id) return;
 
-    const fetchInquiry = async () => {
-      const { data, error } = await supabase
+    const fetchInquiryDetails = async () => {
+      const { data: inquiryData, error } = await supabase
         .from('inquiries')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) console.error(error.message);
-      else setInquiry(data);
+      if (!error) setInquiry(inquiryData);
+
+      const { data: commentsData } = await supabase
+        .from('internal_comments')
+        .select('message, created_at, user_id')
+        .eq('inquiry_id', id)
+        .order('created_at', { ascending: true });
+
+      setComments(commentsData || []);
     };
 
-    fetchInquiry();
+    fetchInquiryDetails();
   }, [id]);
 
-interface AssignRequest {
-    inquiryId: string;
-    userId: string;
-}
+  const handleReply = async () => {
+    const message = prompt('Enter your reply:');
+    if (message && inquiry) {
+      const { error } = await supabase.from('internal_comments').insert({
+        inquiry_id: inquiry.id,
+        user_id: inquiry.assigned_to, // Or the logged-in user ID
+        message,
+      });
 
-const handleAssign = async (userId: string): Promise<void> => {
-    if (!inquiry) {
-        alert('Inquiry data is not available.');
-        return;
+      if (!error) {
+        alert('Reply added');
+        location.reload();
+      }
     }
-    const requestBody: AssignRequest = { inquiryId: inquiry.id, userId };
-    const response = await fetch('/api/inquiries/assign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (response.ok) {
-        alert('Inquiry assigned successfully!');
-    } else {
-        alert('Failed to assign inquiry.');
-    }
-};
-
-  // Example usage of handleAssign
-  const assignToUser = () => {
-    const userId = prompt('Enter user ID to assign:');
-    if (userId) handleAssign(userId);
-  };
-
-  // Adding a button to use assignToUser
-  <button onClick={assignToUser}>Assign Inquiry</button>
-
-interface StatusChangeRequest {
-    inquiryId: string;
-    status: string;
-}
-
-const handleStatusChange = async (status: string): Promise<void> => {
-    if (!inquiry) {
-        alert('Inquiry data is not available.');
-        return;
-    }
-    const requestBody: StatusChangeRequest = { inquiryId: inquiry.id, status };
-    const response = await fetch('/api/inquiries/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (response.ok) {
-        alert('Status updated successfully!');
-    } else {
-        alert('Failed to update status.');
-    }
-};
-
-  // Adding a button to use handleStatusChange
-  const changeStatus = () => {
-    const newStatus = prompt('Enter new status:');
-    if (newStatus) handleStatusChange(newStatus);
   };
 
   if (!inquiry) return <p>Loading...</p>;
 
-interface ReplyRequest {
-    inquiryId: string;
-    message: string;
-}
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-semibold">Inquiry Details</h1>
+      <div className="space-y-1 text-sm">
+        <p><strong>Subject:</strong> {inquiry.subject}</p>
+        <p><strong>From:</strong> {inquiry.from_email}</p>
+        <p><strong>Received At:</strong> {new Date(inquiry.received_at).toLocaleString()}</p>
+        <p><strong>Status:</strong> {inquiry.status}</p>
+        <p><strong>Category:</strong> {inquiry.category}</p>
+        <p><strong>Thread ID:</strong> {inquiry.thread_id}</p>
+        <p><strong>Original ID:</strong> {inquiry.original_id}</p>
+        <p className="mt-4"><strong>Body:</strong></p>
+        <pre className="bg-gray-100 p-4 rounded">{inquiry.body}</pre>
+      </div>
 
-const handleReply = async (message: string): Promise<void> => {
-    if (!inquiry) {
-        alert('Inquiry data is not available.');
-        return;
-    }
-    const requestBody: ReplyRequest = { inquiryId: inquiry.id, message };
-    const response = await fetch('/api/inquiries/reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (response.ok) {
-        alert('Reply sent successfully!');
-    } else {
-        alert('Failed to send reply.');
-    }
-};
-
-return (
-    <div>
-        <h1>Inquiry Details</h1>
-        {inquiry ? (
-            <div>
-                <p>Subject: {inquiry.subject}</p>
-                <p>From: {inquiry.from_email}</p>
-                <p>Received At: {inquiry.received_at}</p>
-                <p>Status: {inquiry.status}</p>
-                <p>Category: {inquiry.category}</p>
-                <p>Body: {inquiry.body}</p>
-                <button onClick={assignToUser}>Assign Inquiry</button>
-                <button onClick={changeStatus}>Change Status</button>
-                <button onClick={() => {
-                    const message = prompt('Enter your reply:');
-                    if (message) handleReply(message);
-                }}>Reply</button>
-            </div>
+      <div className="space-y-2 mt-6">
+        <h2 className="text-xl font-medium">Threaded Comments</h2>
+        {comments.length === 0 ? (
+          <p className="text-gray-500">No comments yet.</p>
         ) : (
-            <p>Loading...</p>
+          comments.map((comment, idx) => (
+            <div key={idx} className="p-3 bg-gray-50 border rounded">
+              <p className="text-sm">{comment.message}</p>
+              <p className="text-xs text-gray-400">
+                By {comment.user_id} on {new Date(comment.created_at).toLocaleString()}
+              </p>
+            </div>
+          ))
         )}
+      </div>
+
+      <button
+        onClick={handleReply}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Add Comment
+      </button>
     </div>
-);
+  );
 }

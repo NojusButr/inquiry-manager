@@ -1,6 +1,10 @@
+"use client";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { createClient } from '@supabase/supabase-js';
+import Navbar from '@/components/ui/navbar';
+import { useEffect, useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +30,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if user is logged in (by checking supabase.auth.getUser on client)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setIsLoggedIn(!!data.user);
+    });
+  }, []);
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {isLoggedIn && <Navbar />}
         {children}
       </body>
     </html>

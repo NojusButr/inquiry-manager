@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     // Step 3: Retrieve the user’s information from Supabase using their email (assuming you already have a unique email per user)
     const { data: customUser, error: customUserError } = await supabase
       .from("users")
-      .select("id, email")
+      .select("id, email, company_id") // Fetch company_id as well
       .eq("email", email)  // Link the Gmail account to the user by email
       .single();
 
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'User not found or error fetching user data' }, { status: 500 });
     }
 
-    // Step 4: Insert the Gmail account information into the `email_accounts` table
+    // Step 4: Insert the Gmail account information into the `email_accounts` table, including company_id
     const { error } = await supabase.from('email_accounts').insert({
       email_address: email,
       refresh_token: tokens.refresh_token,
@@ -52,6 +52,7 @@ export async function GET(request: Request) {
       provider: 'gmail',
       connected_at: new Date().toISOString(),
       user_id: customUser.id,  // Link the email account to the user in the `users` table
+      company_id: customUser.company_id, // Link to company
     });
 
     if (error) {
