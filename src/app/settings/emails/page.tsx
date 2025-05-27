@@ -27,7 +27,7 @@ export default function EmailSettings() {
     return 5;
   });
   const [isAdmin, setIsAdmin] = useState(false);
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  // Removed unused companyId state
   const [userMap, setUserMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -57,7 +57,6 @@ export default function EmailSettings() {
         return;
       }
 
-      setCompanyId(customUser.company_id || null);
       setIsAdmin(customUser.role === 'admin');
 
       type EmailAccount = { id: string; email_address: string; user_id: string };
