@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../../layout';
+//import { supabase } from '../../layout';
 import { X } from 'lucide-react';
 import Image from 'next/image';
+import { supabase } from "../../layout";
 
 export default function EmailSettings() {
   const [emailAccounts, setEmailAccounts] = useState<{ id: string; email_address: string; user_id: string }[]>([]);

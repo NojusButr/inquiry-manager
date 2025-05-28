@@ -862,10 +862,15 @@ export default function Inbox() {
                                           <span className="ml-2 text-xs text-blue-700">(sent by {senderName})</span>
                                         )}
                                       </p>
-                                      <p className="text-xs text-gray-400">
+                                      <p className="text-xs text-gray-400 ">
                                         Received: {msg.received_at ? new Date(msg.received_at).toLocaleString() : msg.sent_at ? new Date(msg.sent_at).toLocaleString() : ""}
                                       </p>
-                                      <p className="mt-2 text-sm" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.body) }} />
+                                      {/* Scrollable, responsive container for HTML body */}
+                                      <div
+                                        className="mt-2 text-sm max-h-48 md:max-h-64 overflow-auto break-words w-full"
+                                        style={{ wordBreak: "break-word" }}
+                                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(msg.body) }}
+                                      />
                                     </div>
                                   );
                                 });

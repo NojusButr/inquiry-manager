@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { supabase } from '../../../layout'; // Make sure this exports a configured Supabase client
+import { supabase } from '../../../layout';
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,

@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '../../../layout';
+// import { supabase } from '../../../layout';
+import { createClient } from '@/utils/supabase/server';
 import { google } from 'googleapis';
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const { inquiryId } = await request.json();
     // Fetch inquiry to get original_id and email_account_id
     const { data: inquiry, error: inquiryError } = await supabase
