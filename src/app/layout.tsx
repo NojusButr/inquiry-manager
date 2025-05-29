@@ -23,7 +23,7 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Supabase environment variables are not set.");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function RootLayout({
   children,
@@ -49,3 +49,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+export { supabase };
