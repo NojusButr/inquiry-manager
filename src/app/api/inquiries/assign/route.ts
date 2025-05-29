@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '../../../layout';
+import { createClient } from '@/utils/supabase/server';
 
+const supabase = await createClient();
 interface PostRequestBody {
     inquiryId: string;
     userId: string;

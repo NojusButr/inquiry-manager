@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { supabase } from '../../../layout';
+import { createClient } from '@/utils/supabase/server';
+
+const supabase = await createClient();
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
