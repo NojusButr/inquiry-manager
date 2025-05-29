@@ -1,9 +1,10 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "../../layout";
+// import { supabase } from "../../layout";
 import { Button } from "@/components/ui/button";
 import DOMPurify from "dompurify";
+import { supabase } from '@/utils/supabase/client';
 
 interface Inquiry {
   id: string;

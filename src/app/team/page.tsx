@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { supabase } from '../layout';
+// import { supabase } from '../layout';
+// import { createClient } from '@/utils/supabase/client';
+
+// const supabase = createClient();
+import { supabase } from '@/utils/supabase/client';
 
 interface TeamUser {
   id: string;

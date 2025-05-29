@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../layout";
+// import { supabase } from "../layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import stringSimilarity from "string-similarity";
 import { Bar, Pie } from 'react-chartjs-2';
@@ -15,6 +15,7 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
+import { supabase } from '@/utils/supabase/client';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { SupabaseClient } from "@supabase/supabase-js";
+// import { supabase } from '@/utils/supabase/client';
 
 interface Shipment {
   id: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "../layout";
+// import { supabase } from "../layout";
 import "../globals.css";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react"
 import ShipmentsManager from "./ShipmentsManager";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from '@/utils/supabase/client';
+
 
 interface Inquiry {
   id: string;

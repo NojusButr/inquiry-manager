@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { supabase } from '@/app/layout';
+// import { supabase } from '@/app/layout';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -9,6 +9,10 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+// import { createClient } from '@/utils/supabase/client';
+
+// const supabase = createClient();
+import { supabase } from '@/utils/supabase/client';
 
 export default function Navbar() {
   const [loggedIn, setLoggedIn] = React.useState(false);
